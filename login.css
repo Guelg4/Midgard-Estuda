@@ -1,0 +1,139 @@
+/* ============================================================
+   MIDGARD — login.css
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #2e3a18 0%, #4a5c2a 60%, #6b7c3f 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+
+.login-card {
+  background: #121212;
+  border: 1px solid rgba(200,212,160,0.2);
+  border-radius: 16px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+}
+
+.login-logo {
+  width: 56px;
+  height: 56px;
+  background: #b8960c;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #2e3a18;
+  margin: 0 auto 14px;
+  border: 2px solid #d4aa20;
+}
+
+.login-title {
+  font-family: 'Cinzel', serif;
+  font-size: 22px;
+  letter-spacing: 4px;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.login-sub {
+  font-size: 12px;
+  color: #c8d4a0;
+  letter-spacing: 1.5px;
+  margin-bottom: 28px;
+}
+
+form { text-align: left; }
+
+label {
+  display: block;
+  font-size: 12px;
+  color: #aaa;
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+  margin-top: 14px;
+}
+
+input {
+  width: 100%;
+  padding: 10px 12px;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input:focus { border-color: #6b7c3f; }
+input::placeholder { color: #555; }
+
+.error {
+  display: none;
+  color: #ff6b6b;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.btn-solid {
+  width: 100%;
+  margin-top: 22px;
+  padding: 11px;
+  background: #4a5c2a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.2s;
+}
+
+.btn-solid:hover:not(:disabled) { background: #6b7c3f; }
+.btn-solid:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-outline {
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px;
+  background: transparent;
+  color: #c8d4a0;
+  border: 1px solid rgba(200,212,160,0.4);
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover { background: rgba(200,212,160,0.08); border-color: #c8d4a0; }
+
+.btn-clear {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+  background: transparent;
+  color: #666;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.btn-clear:hover:not(:disabled) { color: #aaa; }
+.btn-clear:disabled { opacity: 0.4; cursor: not-allowed; }

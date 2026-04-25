@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Midgard — Portal de Estudos</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <button id="theme-toggle" class="theme-toggle" title="Alternar tema">🌙</button>
+    <div class="header-logo">M</div>
+    <h1>MIDGARD</h1>
+    <p>Portal de Estudos · 3º A Administração</p>
+    <div class="badge-row">
+      <span class="badge">⚔ Ordem da Fênix</span>
+      <span class="badge" id="user-badge">...</span>
+      <span class="badge" id="checked-badge">0 estudados</span>
+    </div>
+    <button class="btn-logout" id="logout-btn" title="Sair">Sair</button>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav">
+    <button class="nav-btn active" onclick="showTab('materias', this)">📚 Matérias</button>
+    <button class="nav-btn"       onclick="showTab('checklist', this)">✅ Checklist</button>
+    <button class="nav-btn"       onclick="showTab('materiais', this)">📎 Materiais</button>
+    <button class="nav-btn"       onclick="showTab('ranking', this)">🏆 Ranking</button>
+  </div>
+
+  <!-- CONTEÚDO -->
+  <div class="content">
+
+    <!-- ── MATÉRIAS ── -->
+    <div class="section active" id="tab-materias">
+      <p class="section-label">Selecione uma matéria para ver progresso e arquivos</p>
+      <div class="subject-grid" id="subject-grid"></div>
+
+      <!-- PAINEL DE MATÉRIA (aparece ao clicar) -->
+      <div class="subject-panel hidden" id="subject-panel">
+        <div class="panel-header">
+          <span id="panel-icon"></span>
+          <span id="panel-name"></span>
+          <button class="panel-close" onclick="closePanel()">✕</button>
+        </div>
+
+        <!-- ABAS DO PAINEL -->
+        <div class="panel-tabs">
+          <button class="ptab active" onclick="switchPanelTab('resumos', this)">📄 Resumos</button>
+          <button class="ptab"        onclick="switchPanelTab('videos', this)">▶ Vídeos</button>
+          <button class="ptab"        onclick="switchPanelTab('exercicios', this)">✏ Exercícios</button>
+          <button class="ptab"        onclick="switchPanelTab('drive', this)">📁 Drive</button>
+        </div>
+
+        <!-- LISTA DE MATERIAIS DA MATÉRIA -->
+        <div class="panel-body" id="panel-body"></div>
+
+        <!-- FORM ADICIONAR MATERIAL NA MATÉRIA -->
+        <div class="panel-add">
+          <p class="panel-add-title">+ Adicionar material nesta matéria</p>
+          <div class="panel-add-row">
+            <input id="pm-title" placeholder="Título do material" />
+            <select id="pm-type">
+              <option value="resumo">📄 Resumo</option>
+              <option value="video">▶ Vídeo YouTube</option>
+              <option value="exercicio">✏ Exercício</option>
+              <option value="drive">📁 Drive / PDF</option>
+            </select>
+          </div>
+          <div class="panel-add-row">
+            <input id="pm-link" placeholder="Link (YouTube, Drive, etc.) — opcional" />
+            <button class="btn-olive" onclick="addPanelMaterial()">Adicionar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CHECKLIST ── -->
+    <div class="section" id="tab-checklist">
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-val" id="total-topics">0</div>
+          <div class="stat-lbl">total de tópicos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="done-topics">0</div>
+          <div class="stat-lbl">concluídos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="pct-topics">0%</div>
+          <div class="stat-lbl">progresso</div>
+        </div>
+      </div>
+      <div class="filter-row" id="checklist-filters"></div>
+      <div class="card" id="checklist-list"></div>
+    </div>
+
+    <!-- ── MATERIAIS GERAIS ── -->
+    <div class="section" id="tab-materiais">
+      <div class="card" style="margin-bottom:14px;">
+        <p class="section-label" style="margin-bottom:12px;">Adicionar material geral</p>
+        <div class="add-row">
+          <input id="mat-title"   placeholder="Título do material" />
+          <select id="mat-type">
+            <option value="resumo">📄 Resumo</option>
+            <option value="video">▶ Vídeo YouTube</option>
+            <option value="exercicio">✏ Exercício</option>
+            <option value="drive">📁 Drive / PDF</option>
+          </select>
+        </div>
+        <div class="add-row">
+          <input id="mat-link"    placeholder="Link (YouTube, Drive, etc.) — opcional" />
+          <select id="mat-subject"></select>
+          <button class="btn-olive" onclick="addMaterial()">+ Adicionar</button>
+        </div>
+      </div>
+
+      <!-- FILTROS POR TIPO -->
+      <div class="filter-row" id="mat-type-filters">
+        <button class="filter-btn active" onclick="setMatFilter('all', this)">Todos</button>
+        <button class="filter-btn" onclick="setMatFilter('resumo', this)">📄 Resumos</button>
+        <button class="filter-btn" onclick="setMatFilter('video', this)">▶ Vídeos</button>
+        <button class="filter-btn" onclick="setMatFilter('exercicio', this)">✏ Exercícios</button>
+        <button class="filter-btn" onclick="setMatFilter('drive', this)">📁 Drive</button>
+      </div>
+
+      <div id="materials-list"></div>
+    </div>
+
+    <!-- ── RANKING ── -->
+    <div class="section" id="tab-ranking">
+      <div class="card" style="margin-bottom:12px;">
+        <p class="section-label" style="margin-bottom:4px;">Ranking da Turma</p>
+        <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:14px;">
+          Baseado em conteúdos marcados como estudados. Seu progresso é salvo automaticamente.
+        </p>
+        <div id="ranking-list"></div>
+      </div>
+
+      <!-- ADICIONAR ALUNO MANUALMENTE -->
+      <div class="card">
+        <p class="section-label" style="margin-bottom:10px;">Adicionar aluno manualmente</p>
+        <div class="add-row">
+          <input id="rank-name"  placeholder="Nome ou email do aluno" />
+          <input id="rank-score" type="number" min="0" placeholder="Pts" style="max-width:90px;" />
+          <button class="btn-olive" onclick="addRankEntry()">Adicionar</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<script type="module" src="script.js"></script>
+</body>
+</html>

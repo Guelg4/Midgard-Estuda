@@ -29,6 +29,7 @@
     <button class="nav-btn"       onclick="showTab('checklist', this)">✅ Checklist</button>
     <button class="nav-btn"       onclick="showTab('materiais', this)">📎 Materiais</button>
     <button class="nav-btn"       onclick="showTab('ranking', this)">🏆 Ranking</button>
+    <button class="nav-btn"       onclick="showTab('tutor', this)">🤖 Tutor IA</button>
   </div>
 
   <!-- CONTEÚDO -->
@@ -147,6 +148,40 @@
           <input id="rank-name"  placeholder="Nome ou email do aluno" />
           <input id="rank-score" type="number" min="0" placeholder="Pts" style="max-width:90px;" />
           <button class="btn-olive" onclick="addRankEntry()">Adicionar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TUTOR IA ── -->
+    <div class="section" id="tab-tutor">
+      <div class="tutor-wrap">
+        <!-- Seletor de matéria -->
+        <div class="tutor-subjects" id="tutor-subjects"></div>
+
+        <!-- Chat -->
+        <div class="tutor-chat" id="tutor-chat">
+          <div class="tutor-msg tutor-ai">
+            <div class="tutor-avatar">🎓</div>
+            <div class="tutor-bubble">
+              Olá, guerreiro da Midgard! Sou seu tutor. Selecione uma matéria acima e me diga sua dúvida — vou te guiar passo a passo, sem entregar tudo pronto. ⚔
+              <div class="tutor-quickbtns">
+                <button class="tutor-qbtn" onclick="tutorQuick('Me explique um conceito desta matéria')">Explicar conceito</button>
+                <button class="tutor-qbtn" onclick="tutorQuick('Crie um exercício para eu praticar')">Exercício prático</button>
+                <button class="tutor-qbtn" onclick="tutorQuick('Como estudar melhor esta matéria?')">Dicas de estudo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input -->
+        <div class="tutor-input-row">
+          <textarea id="tutor-input" rows="1" placeholder="Escreva sua dúvida..." onkeydown="tutorKey(event)" oninput="tutorResize(this)"></textarea>
+          <button class="tutor-send" id="tutor-send-btn" onclick="tutorSend()" title="Enviar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
         </div>
       </div>
     </div>

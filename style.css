@@ -556,3 +556,153 @@ body { font-family: var(--font-sans); }
   .add-row { flex-direction: column; }
   .panel-add-row { flex-direction: column; }
 }
+
+/* ─── TUTOR IA ─── */
+.tutor-wrap {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  height: 560px;
+}
+
+.tutor-subjects {
+  display: flex;
+  gap: 6px;
+  padding: 10px 14px;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  overflow-x: auto;
+  flex-shrink: 0;
+  background: var(--color-background-secondary);
+}
+.tutor-subjects::-webkit-scrollbar { display: none; }
+
+.tutor-subj-btn {
+  font-size: 12px;
+  padding: 4px 11px;
+  border-radius: 20px;
+  border: 0.5px solid var(--color-border-secondary);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  transition: all 0.15s;
+}
+.tutor-subj-btn:hover { background: var(--color-background-tertiary); }
+.tutor-subj-btn.active {
+  background: var(--olive-bg);
+  color: var(--olive-dark);
+  border-color: var(--olive-mid);
+  font-weight: 500;
+}
+
+.tutor-chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.tutor-chat::-webkit-scrollbar { width: 4px; }
+.tutor-chat::-webkit-scrollbar-thumb { background: var(--color-border-secondary); border-radius: 2px; }
+
+.tutor-msg { display: flex; gap: 8px; align-items: flex-start; }
+.tutor-msg.tutor-user { flex-direction: row-reverse; }
+
+.tutor-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--olive);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.tutor-bubble {
+  max-width: 78%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text-primary);
+}
+.tutor-ai .tutor-bubble {
+  background: var(--color-background-secondary);
+  border-radius: 4px 14px 14px 14px;
+}
+.tutor-user .tutor-bubble {
+  background: var(--olive);
+  color: white;
+  border-radius: 14px 4px 14px 14px;
+}
+
+.tutor-quickbtns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.tutor-qbtn {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 0.5px solid var(--olive-mid);
+  background: var(--olive-bg);
+  color: var(--olive-dark);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: background 0.15s;
+}
+.tutor-qbtn:hover { background: var(--olive-soft); }
+
+.tutor-typing { display: flex; gap: 4px; align-items: center; padding: 10px 14px; }
+.tutor-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--color-text-secondary);
+  animation: tbounce 1.2s infinite;
+}
+.tutor-dot:nth-child(2) { animation-delay: 0.2s; }
+.tutor-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes tbounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+.tutor-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  padding: 12px 14px;
+  border-top: 0.5px solid var(--color-border-tertiary);
+  flex-shrink: 0;
+}
+
+#tutor-input {
+  flex: 1;
+  resize: none;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  background: var(--color-background-primary);
+  max-height: 100px;
+  outline: none;
+  transition: border-color 0.15s;
+  line-height: 1.4;
+}
+#tutor-input:focus { border-color: var(--olive-mid); }
+
+.tutor-send {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--olive);
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.1s;
+}
+.tutor-send:hover { background: var(--olive-light); }
+.tutor-send:active { transform: scale(0.93); }
+.tutor-send:disabled { background: var(--color-border-secondary); cursor: default; }

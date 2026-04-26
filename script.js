@@ -273,6 +273,7 @@ window.showTab = function(tab, btn) {
   if (tab === 'checklist') renderChecklist();
   if (tab === 'materiais') renderMaterials();
   if (tab === 'ranking')   renderRanking();
+  if (tab === 'tutor')     initTutor();
 };
 
 // ============================================================
@@ -528,4 +529,117 @@ window.addRankEntry = async function() {
   document.getElementById('rank-name').value  = '';
   document.getElementById('rank-score').value = '';
   renderRanking();
+};
+// ============================================================
+// TUTOR IA
+// ============================================================
+let tutorHistory = [];
+let tutorSubject = 'Geral';
+let tutorLoading = false;
+
+function initTutor() {
+  const container = document.getElementById('tutor-subjects');
+  if (!container) return;
+  const subjects = [{ id: 'Geral', name: 'Geral', icon: '📚' }, ...SUBJECTS];
+  container.innerHTML = subjects.map(s =>
+    `<button class="tutor-subj-btn ${s.name === 'Geral' ? 'active' : ''}"
+      onclick="tutorSetSubject(this, '${s.name}', '${s.icon || '📚'}')">${s.icon || ''} ${s.name}</button>`
+  ).join('');
+}
+
+window.tutorSetSubject = function(btn, name, icon) {
+  document.querySelectorAll('.tutor-subj-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  tutorSubject = name;
+};
+
+window.tutorKey = function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); tutorSend(); }
+};
+
+window.tutorResize = function(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+};
+
+window.tutorQuick = function(text) {
+  document.getElementById('tutor-input').value = text;
+  tutorSend();
+};
+
+function tutorEscape(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function tutorAddMsg(role, content) {
+  const chat = document.getElementById('tutor-chat');
+  const div = document.createElement('div');
+  div.className = 'tutor-msg ' + (role === 'ai' ? 'tutor-ai' : 'tutor-user');
+  if (role === 'ai') {
+    div.innerHTML = `<div class="tutor-avatar">🎓</div><div class="tutor-bubble">${tutorEscape(content)}</div>`;
+  } else {
+    div.innerHTML = `<div class="tutor-bubble">${tutorEscape(content)}</div>`;
+  }
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function tutorShowTyping() {
+  const chat = document.getElementById('tutor-chat');
+  const div = document.createElement('div');
+  div.className = 'tutor-msg tutor-ai'; div.id = 'tutor-typing';
+  div.innerHTML = '<div class="tutor-avatar">🎓</div><div class="tutor-bubble tutor-typing"><div class="tutor-dot"></div><div class="tutor-dot"></div><div class="tutor-dot"></div></div>';
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function tutorRemoveTyping() {
+  const t = document.getElementById('tutor-typing');
+  if (t) t.remove();
+}
+
+window.tutorSend = async function() {
+  if (tutorLoading) return;
+  const input = document.getElementById('tutor-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = ''; input.style.height = 'auto';
+  tutorLoading = true;
+  document.getElementById('tutor-send-btn').disabled = true;
+
+  tutorAddMsg('user', text);
+  tutorHistory.push({ role: 'user', content: text });
+  tutorShowTyping();
+
+  const materia = tutorSubject === 'Geral' ? 'todas as matérias do ensino médio' : tutorSubject;
+  const system = `Você é o Tutor da Ordem da Fênix, assistente educacional do portal Midgard para alunos do 3º ano de Administração.
+Você é especialista em ${materia}.
+Seu método é socrático: guie o aluno com perguntas e dicas progressivas, nunca entregue a resposta diretamente na primeira mensagem.
+Quebre problemas difíceis em partes menores. Use exemplos práticos e do cotidiano.
+Se o aluno pedir exercício, crie um adequado ao nível e aguarde a resposta dele antes de corrigir.
+Seja encorajador, paciente e direto. Responda sempre em português brasileiro.
+Limite suas respostas a no máximo 4 parágrafos curtos.`;
+
+  try {
+    const res = await fetch('https://midgard-estuda.pmiguelg123.workers.dev/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system,
+        messages: tutorHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content && data.content[0] ? data.content[0].text : 'Desculpe, tive um problema. Tente novamente.';
+    tutorRemoveTyping();
+    tutorHistory.push({ role: 'assistant', content: reply });
+    tutorAddMsg('ai', reply);
+  } catch(e) {
+    tutorRemoveTyping();
+    tutorAddMsg('ai', 'Erro de conexão. Verifique e tente novamente.');
+  }
+  tutorLoading = false;
+  document.getElementById('tutor-send-btn').disabled = false;
 };

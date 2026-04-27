@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <title>Login — Midgard</title>
   <link rel="stylesheet" href="login.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4a5c2a">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>

@@ -533,6 +533,24 @@ window.addRankEntry = async function() {
 // ============================================================
 // TUTOR IA
 // ============================================================
+
+function tutorGetConteudo(subjectId) {
+  if (subjectId === 'Geral') {
+    // Monta resumo de todas as matérias
+    return SUBJECTS.map(s => {
+      const topicos = TOPICS[s.id] || [];
+      if (!topicos.length) return null;
+      return `${s.name}: ${topicos.join(', ')}`;
+    }).filter(Boolean).join('\n');
+  } else {
+    // Só a matéria selecionada
+    const sub = SUBJECTS.find(s => s.name === subjectId);
+    if (!sub) return '';
+    const topicos = TOPICS[sub.id] || [];
+    return topicos.join(', ');
+  }
+}
+
 let tutorHistory = [];
 let tutorSubject = 'Geral';
 let tutorLoading = false;
@@ -610,11 +628,14 @@ window.tutorSend = async function() {
   tutorAddMsg('user', text);
   tutorHistory.push({ role: 'user', content: text });
   tutorShowTyping();
+const materia = tutorSubject === 'Geral' ? 'todas as matérias do ensino médio' : tutorSubject;
+const conteudo = tutorGetConteudo(tutorSubject);
 
-  const materia = tutorSubject === 'Geral' ? 'todas as matérias do ensino médio' : tutorSubject;
-  const system = `Você é o Tutor da Ordem da Fênix, assistente educacional do portal Midgard para alunos do 3º ano de Administração.
+const system = `Você é o Tutor da Ordem da Fênix, assistente educacional do portal Midgard para alunos do 3º ano de Administração.
 Você é especialista em ${materia}.
-Seu método é socrático: guie o aluno com perguntas e dicas progressivas, nunca entregue a resposta diretamente na primeira mensagem.
+Os tópicos que a turma está estudando são:
+${conteudo}
+Foque nesses conteúdos ao responder. Seu método é socrático: guie o aluno com perguntas e dicas progressivas, nunca entregue a resposta diretamente na primeira mensagem.
 Quebre problemas difíceis em partes menores. Use exemplos práticos e do cotidiano.
 Se o aluno pedir exercício, crie um adequado ao nível e aguarde a resposta dele antes de corrigir.
 Seja encorajador, paciente e direto. Responda sempre em português brasileiro.

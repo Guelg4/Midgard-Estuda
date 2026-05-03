@@ -706,3 +706,149 @@ body { font-family: var(--font-sans); }
 .tutor-send:hover { background: var(--olive-light); }
 .tutor-send:active { transform: scale(0.93); }
 .tutor-send:disabled { background: var(--color-border-secondary); cursor: default; }
+
+/* ============================================================
+   MURAL DE ATIVIDADES
+   ============================================================ */
+.mural-card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--radius-lg, 12px);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  transition: border-color 0.15s;
+}
+
+.mural-card:hover { border-color: var(--olive-mid); }
+
+.mural-card.urgente  { border-left: 4px solid #e74c3c; }
+.mural-card.moderado { border-left: 4px solid #f39c12; }
+.mural-card.tranquilo{ border-left: 4px solid #27ae60; }
+
+.mural-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  min-width: 42px;
+}
+
+.mural-urgencia {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.mural-dia {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.mural-mes {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mural-info { flex: 1; min-width: 0; }
+
+.mural-titulo {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 3px;
+}
+
+.mural-meta {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mural-desc {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-top: 5px;
+  line-height: 1.4;
+}
+
+.mural-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--olive-bg, #f0f2e8);
+  color: var(--olive-dark, #2e3a18);
+  border: 0.5px solid var(--olive-soft, #d6dcc0);
+}
+
+.mural-tag.urgente   { background: rgba(231,76,60,0.12);  color: #e74c3c; border-color: rgba(231,76,60,0.3); }
+.mural-tag.moderado  { background: rgba(243,156,18,0.12); color: #d68910; border-color: rgba(243,156,18,0.3); }
+.mural-tag.tranquilo { background: rgba(39,174,96,0.12);  color: #27ae60; border-color: rgba(39,174,96,0.3); }
+
+.mural-actions { flex-shrink: 0; }
+
+.mural-remove-btn {
+  background: none;
+  border: 0.5px solid var(--color-border-secondary);
+  color: var(--color-text-secondary);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-sans);
+}
+
+.mural-remove-btn:hover {
+  border-color: #e74c3c;
+  color: #e74c3c;
+  background: rgba(231,76,60,0.08);
+}
+
+.mural-vazia {
+  text-align: center;
+  padding: 2.5rem;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.mural-vazia .mural-vazia-icon { font-size: 32px; margin-bottom: 8px; }
+
+input[type="date"] {
+  color-scheme: dark;
+  cursor: pointer;
+  color: var(--color-text-primary);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+input[type="date"]:not(:valid) {
+  color: #555;
+}
+
+input[type="date"]:not(:valid)::before {
+  content: "📅 Data de entrega";
+  color: #555;
+}
+
+input[type="date"]::-webkit-datetime-edit {
+  color: transparent;
+}
+
+input[type="date"]:focus::-webkit-datetime-edit,
+input[type="date"]:valid::-webkit-datetime-edit {
+  color: var(--color-text-primary);
+}

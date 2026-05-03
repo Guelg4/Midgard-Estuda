@@ -5,14 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Midgard — Portal de Estudos</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4a5c2a">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
-  </script>
 </head>
 <body>
 <div class="app">
@@ -38,6 +30,7 @@
     <button class="nav-btn"       onclick="showTab('materiais', this)">📎 Materiais</button>
     <button class="nav-btn"       onclick="showTab('ranking', this)">🏆 Ranking</button>
     <button class="nav-btn"       onclick="showTab('tutor', this)">🤖 Tutor IA</button>
+    <button class="nav-btn"       onclick="showTab('mural', this)">📋 Mural</button>
   </div>
 
   <!-- CONTEÚDO -->
@@ -192,6 +185,43 @@
           </button>
         </div>
       </div>
+    </div>
+
+
+    <!-- ── MURAL DE ATIVIDADES ── -->
+    <div class="section" id="tab-mural">
+
+      <!-- FORM ADICIONAR -->
+      <div class="card" style="margin-bottom:14px;">
+        <p class="section-label" style="margin-bottom:12px;">📋 Adicionar atividade</p>
+        <div class="add-row">
+          <input id="mural-titulo" placeholder="Título da atividade (ex: Prova de Física)" />
+          <select id="mural-materia"></select>
+        </div>
+        <div class="add-row">
+          <input id="mural-data" type="text" placeholder="📅 Data de entrega" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" />
+          <select id="mural-urgencia">
+            <option value="urgente">🔴 Urgente</option>
+            <option value="moderado">🟡 Moderado</option>
+            <option value="tranquilo">🟢 Tranquilo</option>
+          </select>
+          <button class="btn-olive" onclick="addMural()">+ Publicar</button>
+        </div>
+        <div class="add-row" style="margin-bottom:0;">
+          <textarea id="mural-desc" placeholder="Descrição (opcional — ex: Capítulos 3 e 4, trazer material...)" rows="2" style="flex:1;font-size:13px;padding:8px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);resize:vertical;font-family:var(--font-sans);"></textarea>
+        </div>
+      </div>
+
+      <!-- FILTROS -->
+      <div class="filter-row" id="mural-filters">
+        <button class="filter-btn active" onclick="setMuralFilter('all', this)">Todas</button>
+        <button class="filter-btn" onclick="setMuralFilter('urgente', this)">🔴 Urgente</button>
+        <button class="filter-btn" onclick="setMuralFilter('moderado', this)">🟡 Moderado</button>
+        <button class="filter-btn" onclick="setMuralFilter('tranquilo', this)">🟢 Tranquilo</button>
+      </div>
+
+      <!-- LISTA -->
+      <div id="mural-list"></div>
     </div>
 
   </div><!-- /content -->

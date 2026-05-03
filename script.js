@@ -34,6 +34,8 @@ let selectedFilter  = 'all';
 let matTypeFilter   = 'all';
 let currentPanelSub = null;
 let currentPanelTab = 'resumos';
+let muralFilter     = 'all';
+let mural           = [];
 
 // ─── MATÉRIAS ───
 const SUBJECTS = [
@@ -166,6 +168,7 @@ onAuthStateChanged(auth, async user => {
   await loadMaterials();
   await loadSubjectMaterials();
   await loadRanking();
+  await loadMural();
 
   renderSubjects();
   renderMaterials();
@@ -254,6 +257,28 @@ async function deleteSubjectMaterial(subId, matId) {
   subjectMats[subId] = subjectMats[subId].filter(m => m.id !== matId);
 }
 
+
+// ============================================================
+// FIRESTORE — MURAL
+// ============================================================
+async function loadMural() {
+  const snap = await getDocs(collection(db, "mural"));
+  mural = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  // Ordena por data mais próxima
+  mural.sort((a, b) => (a.data || '') > (b.data || '') ? 1 : -1);
+}
+
+async function saveMuralItem(item) {
+  const ref = await addDoc(collection(db, "mural"), item);
+  mural.push({ id: ref.id, ...item });
+  mural.sort((a, b) => (a.data || '') > (b.data || '') ? 1 : -1);
+}
+
+async function deleteMuralItem(id) {
+  await deleteDoc(doc(db, "mural", id));
+  mural = mural.filter(m => m.id !== id);
+}
+
 // ============================================================
 // FIRESTORE — RANKING
 // ============================================================
@@ -273,6 +298,7 @@ window.showTab = function(tab, btn) {
   if (tab === 'checklist') renderChecklist();
   if (tab === 'materiais') renderMaterials();
   if (tab === 'ranking')   renderRanking();
+  if (tab === 'mural')     renderMural();
   if (tab === 'tutor')     initTutor();
 };
 
@@ -437,6 +463,13 @@ function populateSubjectSelect() {
   sel.innerHTML = SUBJECTS.map(s => `<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
 }
 
+function populateMuralSelect() {
+  const sel = document.getElementById('mural-materia');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">📚 Matéria (opcional)</option>' +
+    SUBJECTS.map(s => `<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
+}
+
 function renderMaterials() {
   populateSubjectSelect();
   const list   = document.getElementById('materials-list');
@@ -533,24 +566,6 @@ window.addRankEntry = async function() {
 // ============================================================
 // TUTOR IA
 // ============================================================
-
-function tutorGetConteudo(subjectId) {
-  if (subjectId === 'Geral') {
-    // Monta resumo de todas as matérias
-    return SUBJECTS.map(s => {
-      const topicos = TOPICS[s.id] || [];
-      if (!topicos.length) return null;
-      return `${s.name}: ${topicos.join(', ')}`;
-    }).filter(Boolean).join('\n');
-  } else {
-    // Só a matéria selecionada
-    const sub = SUBJECTS.find(s => s.name === subjectId);
-    if (!sub) return '';
-    const topicos = TOPICS[sub.id] || [];
-    return topicos.join(', ');
-  }
-}
-
 let tutorHistory = [];
 let tutorSubject = 'Geral';
 let tutorLoading = false;
@@ -628,14 +643,11 @@ window.tutorSend = async function() {
   tutorAddMsg('user', text);
   tutorHistory.push({ role: 'user', content: text });
   tutorShowTyping();
-const materia = tutorSubject === 'Geral' ? 'todas as matérias do ensino médio' : tutorSubject;
-const conteudo = tutorGetConteudo(tutorSubject);
 
-const system = `Você é o Tutor da Ordem da Fênix, assistente educacional do portal Midgard para alunos do 3º ano de Administração.
+  const materia = tutorSubject === 'Geral' ? 'todas as matérias do ensino médio' : tutorSubject;
+  const system = `Você é o Tutor da Ordem da Fênix, assistente educacional do portal Midgard para alunos do 3º ano de Administração.
 Você é especialista em ${materia}.
-Os tópicos que a turma está estudando são:
-${conteudo}
-Foque nesses conteúdos ao responder. Seu método é socrático: guie o aluno com perguntas e dicas progressivas, nunca entregue a resposta diretamente na primeira mensagem.
+Seu método é socrático: guie o aluno com perguntas e dicas progressivas, nunca entregue a resposta diretamente na primeira mensagem.
 Quebre problemas difíceis em partes menores. Use exemplos práticos e do cotidiano.
 Se o aluno pedir exercício, crie um adequado ao nível e aguarde a resposta dele antes de corrigir.
 Seja encorajador, paciente e direto. Responda sempre em português brasileiro.
@@ -663,4 +675,101 @@ Limite suas respostas a no máximo 4 parágrafos curtos.`;
   }
   tutorLoading = false;
   document.getElementById('tutor-send-btn').disabled = false;
+};
+
+// ============================================================
+// MURAL DE ATIVIDADES
+// ============================================================
+function renderMural() {
+  populateMuralSelect();
+  const list = document.getElementById('mural-list');
+  const urgIcons = { urgente: '🔴', moderado: '🟡', tranquilo: '🟢' };
+  const urgLabels = { urgente: 'Urgente', moderado: 'Moderado', tranquilo: 'Tranquilo' };
+
+  const toShow = muralFilter === 'all' ? mural : mural.filter(m => m.urgencia === muralFilter);
+
+  if (!toShow.length) {
+    list.innerHTML = `<div class="mural-vazia">
+      <div class="mural-vazia-icon">📋</div>
+      Nenhuma atividade ${muralFilter === 'all' ? 'publicada' : 'com este nível de urgência'} ainda!
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = toShow.map(m => {
+    const sub     = SUBJECTS.find(s => s.id === m.materia);
+    const urg     = m.urgencia || 'tranquilo';
+    const icon    = urgIcons[urg];
+    const label   = urgLabels[urg];
+
+    // Formatar data
+    let diaStr = '—', mesStr = '';
+    if (m.data) {
+      const [ano, mes, dia] = m.data.split('-');
+      const meses = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+      diaStr = dia;
+      mesStr = meses[parseInt(mes) - 1] + '/' + ano.slice(2);
+    }
+
+    // Verificar se está vencida
+    const hoje = new Date().toISOString().slice(0,10);
+    const vencida = m.data && m.data < hoje;
+
+    return `<div class="mural-card ${urg} ${vencida ? 'opacity:0.5' : ''}">
+      <div class="mural-badge">
+        <span class="mural-urgencia">${icon}</span>
+        <span class="mural-dia">${diaStr}</span>
+        <span class="mural-mes">${mesStr}</span>
+      </div>
+      <div class="mural-info">
+        <div class="mural-titulo">${vencida ? '✓ ' : ''}${m.titulo}</div>
+        <div class="mural-meta">
+          ${sub ? `<span class="mural-tag">${sub.icon} ${sub.name}</span>` : ''}
+          <span class="mural-tag ${urg}">${label}</span>
+          <span style="color:var(--color-text-secondary);font-size:11px;">por ${m.autor || 'aluno'}</span>
+        </div>
+        ${m.desc ? `<div class="mural-desc">${m.desc}</div>` : ''}
+      </div>
+      <div class="mural-actions">
+        <button class="mural-remove-btn" onclick="removeMural('${m.id}')">Remover</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.addMural = async function() {
+  const titulo   = document.getElementById('mural-titulo').value.trim();
+  const materia  = document.getElementById('mural-materia').value;
+  const data     = document.getElementById('mural-data').value;
+  const urgencia = document.getElementById('mural-urgencia').value;
+  const desc     = document.getElementById('mural-desc').value.trim();
+  if (!titulo) return;
+
+  const item = {
+    titulo,
+    materia,
+    data,
+    urgencia,
+    desc,
+    autor: currentUser.email.split('@')[0],
+    criadoEm: Date.now(),
+  };
+
+  await saveMuralItem(item);
+  document.getElementById('mural-titulo').value = '';
+  document.getElementById('mural-data').value   = '';
+  document.getElementById('mural-desc').value   = '';
+  renderMural();
+};
+
+window.removeMural = async function(id) {
+  await deleteMuralItem(id);
+  renderMural();
+};
+
+window.setMuralFilter = function(filter, btn) {
+  muralFilter = filter;
+  document.querySelectorAll('#mural-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMural();
 };

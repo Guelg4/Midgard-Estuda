@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redefinir Senha — Midgard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #2e3a18 0%, #4a5c2a 60%, #6b7c3f 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .card {
+      background: #121212;
+      border: 1px solid rgba(200,212,160,0.2);
+      border-radius: 16px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      width: 56px; height: 56px;
+      background: #b8960c;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-size: 26px; font-weight: 700;
+      color: #2e3a18;
+      margin: 0 auto 14px;
+      border: 2px solid #d4aa20;
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      letter-spacing: 4px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .sub {
+      font-size: 12px;
+      color: #c8d4a0;
+      letter-spacing: 1.5px;
+      margin-bottom: 28px;
+    }
+
+    /* ESTADOS */
+    .state { display: none; }
+    .state.active { display: block; }
+
+    /* LOADING */
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid rgba(200,212,160,0.2);
+      border-top-color: #b8960c;
+      border-radius: 50%;
+      margin: 20px auto;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-txt {
+      font-size: 13px;
+      color: #888;
+    }
+
+    /* FORM */
+    label {
+      display: block;
+      font-size: 12px;
+      color: #aaa;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+      margin-top: 16px;
+      text-align: left;
+    }
+
+    input {
+      width: 100%;
+      padding: 11px 12px;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    input:focus { border-color: #6b7c3f; }
+    input::placeholder { color: #555; }
+
+    .error-msg {
+      display: none;
+      color: #ff6b6b;
+      font-size: 12px;
+      margin-top: 5px;
+      text-align: left;
+    }
+
+    .btn {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      background: #4a5c2a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: background 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn:hover:not(:disabled) { background: #6b7c3f; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* SUCESSO */
+    .success-icon {
+      font-size: 48px;
+      margin: 10px 0 16px;
+    }
+
+    .success-title {
+      font-family: 'Cinzel', serif;
+      font-size: 18px;
+      color: #fff;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .success-txt {
+      font-size: 13px;
+      color: #aaa;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .btn-outline {
+      width: 100%;
+      padding: 11px;
+      background: transparent;
+      color: #c8d4a0;
+      border: 1px solid rgba(200,212,160,0.4);
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-outline:hover { background: rgba(200,212,160,0.08); }
+
+    /* ERRO */
+    .error-icon { font-size: 48px; margin: 10px 0 16px; }
+    .error-title {
+      font-family: 'Cinzel', serif;
+      font-size: 18px;
+      color: #ff6b6b;
+      margin-bottom: 10px;
+    }
+    .error-txt { font-size: 13px; color: #aaa; line-height: 1.6; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">M</div>
+  <h1>MIDGARD</h1>
+  <p class="sub">Ordem da Fênix · Redefinir Senha</p>
+
+  <!-- CARREGANDO -->
+  <div class="state active" id="state-loading">
+    <div class="spinner"></div>
+    <p class="loading-txt">Verificando link...</p>
+  </div>
+
+  <!-- FORM NOVA SENHA -->
+  <div class="state" id="state-form">
+    <label>Nova senha</label>
+    <input type="password" id="nova-senha" placeholder="••••••••" oninput="validar()">
+    <label>Confirmar senha</label>
+    <input type="password" id="confirmar-senha" placeholder="••••••••" oninput="validar()">
+    <div class="error-msg" id="erro-msg">As senhas não coincidem</div>
+    <button class="btn" id="btn-salvar" onclick="salvarSenha()" disabled>Salvar nova senha</button>
+  </div>
+
+  <!-- SUCESSO -->
+  <div class="state" id="state-sucesso">
+    <div class="success-icon">🛡️</div>
+    <div class="success-title">Senha redefinida!</div>
+    <p class="success-txt">Sua senha foi alterada com sucesso.<br>Você já pode entrar no portal.</p>
+    <button class="btn" onclick="window.location.href='login.html'">Ir para o login</button>
+  </div>
+
+  <!-- ERRO -->
+  <div class="state" id="state-erro">
+    <div class="error-icon">⚠️</div>
+    <div class="error-title">Link inválido</div>
+    <p class="error-txt">Este link de redefinição expirou ou já foi utilizado.<br>Solicite um novo link na tela de login.</p>
+    <button class="btn-outline" onclick="window.location.href='login.html'">Voltar ao login</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }      from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getAuth, verifyPasswordResetCode, confirmPasswordReset }
+                               from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBTkMW6JOr6OJ67b-F-QnG5xhjMxJpzhkg",
+  authDomain: "site-de-estudos-a4220.firebaseapp.com",
+  projectId: "site-de-estudos-a4220",
+  storageBucket: "site-de-estudos-a4220.firebasestorage.app",
+  messagingSenderId: "817252796682",
+  appId: "1:817252796682:web:2db240f2997fab71d1d2f3"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Pegar o oobCode da URL
+const params  = new URLSearchParams(window.location.search);
+const oobCode = params.get('oobCode');
+
+function showState(id) {
+  document.querySelectorAll('.state').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// Verificar se o link é válido
+if (!oobCode) {
+  showState('state-erro');
+} else {
+  verifyPasswordResetCode(auth, oobCode)
+    .then(() => showState('state-form'))
+    .catch(() => showState('state-erro'));
+}
+
+// Validar senhas em tempo real
+window.validar = function() {
+  const s1  = document.getElementById('nova-senha').value;
+  const s2  = document.getElementById('confirmar-senha').value;
+  const err = document.getElementById('erro-msg');
+  const btn = document.getElementById('btn-salvar');
+
+  if (s1.length > 0 && s2.length > 0 && s1 !== s2) {
+    err.style.display = 'block';
+    btn.disabled = true;
+  } else {
+    err.style.display = 'none';
+    btn.disabled = !(s1.length >= 6 && s1 === s2);
+  }
+};
+
+// Salvar nova senha
+window.salvarSenha = async function() {
+  const senha = document.getElementById('nova-senha').value;
+  const btn   = document.getElementById('btn-salvar');
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+  try {
+    await confirmPasswordReset(auth, oobCode, senha);
+    showState('state-sucesso');
+  } catch(e) {
+    showState('state-erro');
+  }
+};
+</script>
+</body>
+</html>
